@@ -1,0 +1,37 @@
+#Requires AutoHotkey v2.0
+
+; คีย์ลัด Ctrl + Shift + T
+^+t::
+{
+    OldClipboard := A_Clipboard
+    A_Clipboard := ""
+    
+    Send "^c"
+    if !ClipWait(0.5)
+        return
+
+    en := "1234567890-=qwertyuiop[]\asdfghjkl;'zxcvbnm,./!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:`"ZXCVBNM<>?"
+    th := "ๅ/_ภถุึคตจขชๆไำพะัีรนยบลฃฟหกดเ้่าสวงผปแอิืทมใฝ+`"!#ฯ%&฿()_+-๑๒๓๔ู฿๕๖๗๘๙ฤฆฏโฌพ็โรศษศซ.()ฉฮฺ์?ฒฬฦ"
+
+    converted := ""
+    text := A_Clipboard
+
+    Loop Parse text
+    {
+        char := A_LoopField
+        posEn := InStr(en, char, true)
+        posTh := InStr(th, char, true)
+
+        if (posEn > 0)
+            converted .= SubStr(th, posEn, 1)
+        else if (posTh > 0)
+            converted .= SubStr(en, posTh, 1)
+        else
+            converted .= char
+    }
+
+    A_Clipboard := converted
+    Send "^v"
+    Sleep 100
+    A_Clipboard := OldClipboard
+}
