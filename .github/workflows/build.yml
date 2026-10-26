@@ -1,0 +1,24 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Ahk2Exe and Base Compiler
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe2.0-beta10/Ahk2Exe.exe" -OutFile "Ahk2Exe.exe"
+          Invoke-WebRequest -Uri "https://www.autohotkey.com/download/ahk-v2.zip" -OutFile "ahk.zip"
+          Expand-Archive -Path "ahk.zip" -DestinationPath "ahk"
+          .\Ahk2Exe.exe /in "KeySwap.ahk" /out "KeySwap-Windows.exe" /base "ahk\AutoHotkey64.exe"
+
+      - name: Upload Finished EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeySwap-Windows
+          path: KeySwap-Windows.exe
