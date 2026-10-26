@@ -9,13 +9,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download Ahk2Exe and Base Compiler
-        shell: pwsh
+      - name: Install AutoHotkey and Compiler
+        shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe2.0-beta10/Ahk2Exe.exe" -OutFile "Ahk2Exe.exe"
-          Invoke-WebRequest -Uri "https://www.autohotkey.com/download/ahk-v2.zip" -OutFile "ahk.zip"
-          Expand-Archive -Path "ahk.zip" -DestinationPath "ahk"
-          .\Ahk2Exe.exe /in "KeySwap.ahk" /out "KeySwap-Windows.exe" /base "ahk\AutoHotkey64.exe"
+          choco install autohotkey.portable --version=2.0.18 -y
+          choco install ahk2exe -y
+
+      - name: Compile AHK to EXE
+        shell: powershell
+        run: |
+          $ahk2exe = "C:\ProgramData\chocolatey\bin\Ahk2Exe.exe"
+          $base = "C:\ProgramData\chocolatey\lib\autohotkey.portable\tools\AutoHotkey64.exe"
+          
+          # สั่งแปลงไฟล์ KeySwap.ahk เป็น KeySwap-Windows.exe
+          & $ahk2exe /in "KeySwap.ahk" /out "KeySwap-Windows.exe" /base $base
 
       - name: Upload Finished EXE
         uses: actions/upload-artifact@v4
